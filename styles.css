@@ -58,13 +58,18 @@ code { font: .88em/1.5 var(--mono); background: var(--tint); padding: .1em .3em;
   position: relative; background: var(--paper); border-radius: 6px; padding: 26px 36px 22px;
   box-shadow: 0 18px 40px -8px rgb(4 30 50 / .45), 0 2px 6px rgb(4 30 50 / .2);
 }
-/* The hero is never taller than the screen: the map frame keeps its aspect ratio, sits on the hero bottom,
-   and loses a strip at the top on a short screen. The card floats on the south land, 30 map units above the frame bottom
-   (map units: x 460 to 1100, top at y 780 or lower, below the channel). 100cqw / 1440 is one map unit. */
+/* The hero is never taller than the screen: the map frame keeps its aspect ratio and is cropped on a short screen.
+   The top loses at most 80 map units, so the labels (top at y 518) keep the land above the channel in view.
+   The rest of the crop comes off the bottom. The card floats on the south land, 30 map units above the hero bottom
+   (map units: x 460 to 1100, below the south shore at y 700). The hero shows at least 580 map units, so the card stays on land.
+   100cqw / 1440 is one map unit. */
 @media (min-width: 1400px) {
-  .hero { container-type: inline-size; aspect-ratio: auto; height: min(calc(100vw * 860 / 1440), max(680px, calc(100svh - var(--bar)))); }
+  .hero { container-type: size; aspect-ratio: auto; height: min(calc(100vw * 860 / 1440), max(680px, calc(100vw * 580 / 1440), calc(100svh - var(--bar)))); }
   /* min-height covers the few pixels by which 100vw (scrollbar included) can exceed the hero width */
-  .map img, .sea, .labels { inset: auto 0 0; height: auto; min-height: 100%; aspect-ratio: 1440 / 860; }
+  .map img, .sea, .labels {
+    inset: auto 0; top: min(0px, max(calc(100cqh - 100cqw * 860 / 1440), calc(100cqw * -80 / 1440)));
+    height: auto; min-height: 100%; aspect-ratio: 1440 / 860;
+  }
   .card {
     position: absolute; left: 20.833%; bottom: calc(100cqw * 30 / 1440); width: 44.444%; padding: 20px 26px 16px;
     display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 26px;
