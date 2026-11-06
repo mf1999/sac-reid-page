@@ -159,9 +159,9 @@ function initCopy() {
   });
 }
 
-// On phones the map shows the eastern channel (the <picture> source): give the labels the same viewBox.
+// On phones the map shows the eastern channel: the map image (.base) and the labels get the narrow viewBox.
 function initMapLabels() {
-  const svg = document.querySelector('.labels');
+  const svg = document.querySelector('.labels'), base = document.querySelector('.map .base');
   const wide = svg.getAttribute('viewBox');
   const mq = window.matchMedia('(max-width: 640px)');
   // preserveAspectRatio "slice" scales the viewBox by the larger ratio
@@ -170,7 +170,7 @@ function initMapLabels() {
     const r = svg.getBoundingClientRect();
     svg.style.setProperty('--s', Math.max(r.width / width, r.height / height));
   };
-  const sync = () => { svg.setAttribute('viewBox', mq.matches ? svg.dataset.narrow : wide); scale(); };
+  const sync = () => { for (const el of [svg, base]) el.setAttribute('viewBox', mq.matches ? svg.dataset.narrow : wide); scale(); };
   mq.addEventListener('change', sync);
   new ResizeObserver(scale).observe(svg);
   sync();
