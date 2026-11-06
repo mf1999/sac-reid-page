@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saint Anthony's Channel ReID v1.0: Vessel Re-Identification From a Fixed Camera</title>
+<meta name="description" content="A vessel re-identification dataset: 712 identities and 56,615 crops from one fixed camera over St. Anthony's Channel near Šibenik, Croatia. CC BY-NC 4.0.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Libre+Caslon+Text:ital@1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top">Saint Anthony's Channel ReID</a>
+  <nav aria-label="Sections">
+    <a href="#gallery">Gallery</a>
+    <a href="#overview">Overview</a>
+    <a href="#statistics">Statistics</a>
+    <a href="#download">Download</a>
+    <a href="#license">License</a>
+    <a href="#citation">Citation</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<section class="hero" aria-labelledby="title">
+  <div class="map" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 640px)" srcset="assets/channel.svg#svgView(viewBox(505,0,1095,1328))">
+      <img src="assets/channel.svg#svgView(viewBox(160,360,1440,860))" alt="">
+    </picture>
+    <canvas class="sea" aria-hidden="true"></canvas>
+    <svg class="labels" viewBox="160 360 1440 860" data-narrow="505 0 1095 1328" preserveAspectRatio="xMidYMid slice">
+      <text x="604" y="592" class="chan" transform="rotate(-9 604 592)">St. Anthony's Channel</text>
+      <text x="1385" y="550" class="town">ŠIBENIK</text>
+      <text x="214" y="905" class="poi fort">St. Nicholas Fortress</text>
+      <text x="1255" y="905" class="poi marina">Mandalina Marina</text>
+    </svg>
+  </div>
+  <div class="card">
+    <h1 id="title">Saint Anthony's Channel ReID: Vessel Re-Identification From a Fixed Camera</h1>
+    <div class="lead">
+      <p class="author">Matej Fabijanić</p>
+      <p class="aff">LABUST (Laboratory for Underwater Systems and Technologies), University of Zagreb, Faculty of Electrical Engineering and Computing (FER)</p>
+    </div>
+    <div class="side">
+      <p class="meta">Version 1.0, released 2026-11-06 · St. Anthony's Channel, Šibenik, Croatia</p>
+      <p class="meta">Made in collaboration with the Martinska Research Station, operated by researchers of the Ruđer Bošković Institute.</p>
+    </div>
+    <p class="facts"><b>712</b> identities · <b>56,615</b> crops · <b>12</b> recording days in 2023 · <b>59</b> MOT test sequences</p>
+    <div class="actions">
+      <a class="btn primary" href="#download">Request access on Zenodo</a>
+      <a class="btn" href="#citation">BibTeX</a>
+      <a class="btn" href="#license">CC BY-NC 4.0</a>
+    </div>
+    <div class="logos" role="group" aria-label="Affiliation and funding">
+      <a href="https://labust.fer.hr/"><img class="labust" src="assets/logos/labust.png" alt="LABUST, Laboratory for Underwater Systems and Technologies" width="671" height="260"></a>
+      <a href="https://www.fer.unizg.hr/en"><img class="fer" src="assets/logos/fer-unizg.svg" alt="University of Zagreb, Faculty of Electrical Engineering and Computing (FER)" width="1389" height="419"></a>
+      <a href="https://www.irb.hr/eng"><img class="irb" src="assets/logos/irb.svg" alt="Ruđer Bošković Institute (IRB)" width="110" height="78"></a>
+      <a href="https://hrzz.hr/en/"><img class="hrzz" src="assets/logos/hrzz.svg" alt="Croatian Science Foundation (HRZZ)" width="194" height="88"></a>
+    </div>
+  </div>
+  <p class="credit">Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a></p>
+</section>
+
+<section id="gallery" class="sec wide">
+  <h2>Sample gallery</h2>
+  <p class="lede">29 vessels from the release, six views each, ordered by recording time. The panel plays the six views of each vessel of the selected class in turn. Select a crop to go to that vessel. The vessel classes are labels for this page only. The release does not contain class labels.</p>
+  <div class="filters" role="group" aria-label="Vessel class"></div>
+  <div class="gallery">
+    <ul class="tiles" aria-label="Vessels"></ul>
+    <aside class="views" aria-live="polite">
+      <p class="hint">Select a crop to see all views of that vessel.</p>
+    </aside>
+  </div>
+</section>
+
+<section id="overview" class="sec">
+  <h2>Overview</h2>
+  <p>The dataset contains image crops of vessels in St. Anthony's Channel near Šibenik, Croatia. One fixed camera recorded the footage at 1920×1080 pixels and 25 frames per second. Each crop shows one vessel. Crops of the same vessel have the same identity number (pid).</p>
+  <p>The footage originates from the Martinska Research Station, part of the Ruđer Bošković Institute.</p>
+  <ul>
+    <li><strong>Train and val:</strong> automatic detection and tracking in the footage, then human review of each identity.</li>
+    <li><strong>Test:</strong> the hand-annotated ground-truth boxes of 59 multi-object tracking sequences of the same camera.</li>
+  </ul>
+  <p>No identity is in two splits. The layout is the Market-1501 layout. A file name is <code>&lt;pid:6&gt;_c&lt;camid:2&gt;_f&lt;frame:6&gt;[_m&lt;k&gt;].jpg</code>, and <code>crops.csv</code> gives the box, the split, the unit and the recording time of each crop.</p>
+
+  <h3>Evaluation</h3>
+  <p>A standard Market-1501 evaluator gives scores that are too high on this dataset, because the gallery holds near-duplicate crops of the same track. The benchmark protocol counts a match only after a time gap and a position change. Use val to select models and settings, and use test only for the final result. The README in the archive gives the full protocol.</p>
+
+  <h3>Privacy</h3>
+  <p>No person is identifiable in the footage. No registration number is clearly visible, except on the large state-owned ferries and the fast passenger boats.</p>
+</section>
+
+<section id="statistics" class="sec">
+  <h2>Statistics</h2>
+  <div class="tables">
+    <table>
+      <caption>Splits</caption>
+      <thead><tr><th scope="col">Folder</th><th scope="col">Split</th><th scope="col" class="num">Identities</th><th scope="col" class="num">Crops</th></tr></thead>
+      <tbody>
+        <tr><td><code>bounding_box_train/</code></td><td>train</td><td class="num">479</td><td class="num">13,798</td></tr>
+        <tr><td><code>val_query/</code></td><td>val</td><td class="num">84</td><td class="num">84</td></tr>
+        <tr><td><code>test_query/</code></td><td>test</td><td class="num">149</td><td class="num">149</td></tr>
+        <tr><td><code>bounding_box_test/</code></td><td>val and test galleries</td><td class="num">84 + 149</td><td class="num">3,330 + 39,254</td></tr>
+      </tbody>
+      <tfoot><tr><th scope="row" colspan="2">Total</th><td class="num">712</td><td class="num">56,615</td></tr></tfoot>
+    </table>
+    <dl class="rec">
+      <div><dt>Camera</dt><dd>One fixed camera, 1920×1080, 25 fps</dd></div>
+      <div><dt>Recorded</dt><dd>2023-08-02 to 2023-09-08, on 12 days</dd></div>
+      <div><dt>Clock</dt><dd>CEST (UTC+02:00), <code>recorded_at</code> within 1 s of the camera overlay</dd></div>
+      <div><dt>Units</dt><dd>557 train, 137 val, 160 test</dd></div>
+      <div><dt>Format</dt><dd>Market-1501 layout, JPEG crops, <code>crops.csv</code></dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="download" class="sec">
+  <h2>Download</h2>
+  <p>The dataset is on Zenodo with restricted access. Zenodo sends the files after the author approves the request.</p>
+  <ol>
+    <li>Open the Zenodo record: <a href="https://doi.org/10.5281/zenodo.24015510">https://doi.org/10.5281/zenodo.24015510</a></li>
+    <li>Select <em>Request access</em> and give your name, your affiliation and the purpose of your research.</li>
+    <li>Accept the CC BY-NC 4.0 license. Commercial use is not permitted.</li>
+  </ol>
+  <p>The archive <code>SaintAnthonysChannelReID_v1.0.zip</code> contains the four image folders, <code>crops.csv</code>, <code>README.md</code>, <code>LICENSE.txt</code>, <code>CITATION.cff</code> and <code>version.json</code>. DOI: <a href="https://doi.org/10.5281/zenodo.24015510">10.5281/zenodo.24015510</a>. Release date: 2026-11-06.</p>
+</section>
+
+<section id="license" class="sec">
+  <h2>License</h2>
+  <p>© 2026 LABUST. Creative Commons Attribution-NonCommercial 4.0 International (<a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>).</p>
+  <p>Commercial use is not permitted. This includes the training of AI models or other algorithms for a commercial purpose. For a commercial license, contact <a href="mailto:matej.fabijanic@fer.hr">matej.fabijanic@fer.hr</a> (or <a href="mailto:labust@fer.hr">labust@fer.hr</a>).</p>
+</section>
+
+<section id="citation" class="sec">
+  <h2>Citation</h2>
+  <p>If you use this dataset, please cite it as below.</p>
+  <div class="bib">
+    <button type="button" class="btn copy" data-copy="bibtex">Copy BibTeX</button>
+<pre><code id="bibtex">@misc{fabijanic2026sacreid,
+  author    = {Fabijani{\'c}, Matej},
+  title     = {Saint Anthony's Channel {ReID}:
+               Vessel Re-Identification From a Fixed Camera},
+  year      = {2026},
+  version   = {1.0},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.24015510},
+  url       = {https://doi.org/10.5281/zenodo.24015510},
+  note      = {Dataset, CC BY-NC 4.0}
+}</code></pre>
+  </div>
+</section>
+
+<aside class="sec also" aria-label="Related dataset">
+  <p><b>Also see:</b> <a href="https://hearmyship.fer.hr/">HearMyShip</a>, a dataset from the same channel. It pairs videos of vessels with underwater acoustic recordings.</p>
+</aside>
+
+<section id="contact" class="sec">
+  <h2>Contact</h2>
+  <p>Matej Fabijanić, LABUST (Laboratory for Underwater Systems and Technologies), University of Zagreb, Faculty of Electrical Engineering and Computing (FER): <a href="mailto:matej.fabijanic@fer.hr">matej.fabijanic@fer.hr</a> (or <a href="mailto:labust@fer.hr">labust@fer.hr</a>).</p>
+</section>
+
+<section id="funding" class="sec">
+  <h2>Funding</h2>
+  <p>The work of doctoral student Matej Fabijanić has been supported in part by the “Young Researchers' career development project – training of doctoral students” of the Croatian Science Foundation funded by the European Union from the National Recovery and Resilience Plan 2021-2026 (NPOO) under the project number HRZZ-DOK-2023-10-6296.</p>
+</section>
+
+</main>
+
+<div class="affil" role="group" aria-label="Affiliation and funding">
+  <a href="https://labust.fer.hr/"><img class="labust" src="assets/logos/labust.png" alt="LABUST, Laboratory for Underwater Systems and Technologies" width="671" height="260"></a>
+  <a href="https://www.fer.unizg.hr/en"><img class="fer" src="assets/logos/fer-unizg.svg" alt="University of Zagreb, Faculty of Electrical Engineering and Computing (FER)" width="1389" height="419"></a>
+  <a href="https://www.irb.hr/eng"><img class="irb" src="assets/logos/irb.svg" alt="Ruđer Bošković Institute (IRB)" width="110" height="78"></a>
+  <a href="https://hrzz.hr/en/"><img class="hrzz" src="assets/logos/hrzz.svg" alt="Croatian Science Foundation (HRZZ)" width="194" height="88"></a>
+</div>
+
+<footer class="foot">
+  <p>Saint Anthony's Channel ReID v1.0 · CC BY-NC 4.0 · Footage: Martinska Research Station, Ruđer Bošković Institute · Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a></p>
+</footer>
+
+</body>
+</html>

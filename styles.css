@@ -1,0 +1,231 @@
+:root {
+  --sea: #0a4f7e;
+  --sea-deep: #083a5e;
+  --shallow: #2bb3bd;
+  --foam: #e9fbfa;
+  --karst: #b9b48a;
+  --macchia: #6d8a45;
+  --roof: #c4532f;
+  --ink: #0f2433;
+  --muted: #475966;
+  --rule: #d9e2e7;
+  --tint: #f1f6f8;
+  --paper: #fff;
+  --sans: "Public Sans", system-ui, sans-serif;
+  --place: "Libre Caslon Text", Georgia, serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --bar: 56px;
+  color-scheme: light;
+  accent-color: var(--sea);
+  scrollbar-color: var(--sea) var(--tint);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--bar) + 16px); }
+body { margin: 0; font: 400 17px/1.65 var(--sans); color: var(--ink); background: var(--paper); }
+::selection { background: var(--shallow); color: var(--ink); }
+a { color: var(--sea); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+a:hover { color: var(--roof); }
+:focus-visible { outline: 2px solid var(--roof); outline-offset: 2px; border-radius: 2px; }
+code { font: .88em/1.5 var(--mono); background: var(--tint); padding: .1em .3em; border-radius: 3px; overflow-wrap: anywhere; }
+
+/* top bar */
+.topbar {
+  position: sticky; top: 0; z-index: 10; height: var(--bar);
+  display: flex; align-items: center; gap: 24px; padding: 0 28px;
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.brand { font-weight: 700; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.topbar nav { display: flex; gap: 20px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.topbar nav a { font-size: 15px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; padding: 4px 0; }
+.topbar nav a:hover { color: var(--sea); }
+
+/* hero: the channel */
+/* the hero keeps the aspect ratio of the map frame (viewBox 160 360 1440 860), so the card, placed in map units, stays on land */
+.hero { position: relative; aspect-ratio: 1440 / 860; overflow: hidden; background: var(--sea-deep); }
+.map, .map img, .sea, .labels { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* the image, the .sea canvas and the labels share one viewBox (the <picture> source and app.js swap it on phones) */
+.map img { object-fit: fill; }
+.map { animation: settle 1.6s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes settle { from { transform: scale(1.06); filter: saturate(.6); } to { transform: none; filter: none; } }
+/* --s is the rendered scale of the map viewBox (app.js): labels keep their design size, but never render below 12 px */
+.labels text { paint-order: stroke; stroke: var(--sea-deep); stroke-width: max(4px, calc(2.6px / var(--s, 1))); fill: #fff; }
+.labels .chan { font: italic max(26px, calc(13.5px / var(--s, 1))) var(--place); letter-spacing: .08em; }
+.labels .town { font: 700 max(20px, calc(13px / var(--s, 1))) var(--sans); letter-spacing: .3em; }
+.labels .poi { font: 600 max(14px, calc(12.5px / var(--s, 1))) var(--sans); letter-spacing: .05em; }
+
+.card {
+  position: relative; background: var(--paper); border-radius: 6px; padding: 26px 36px 22px;
+  box-shadow: 0 18px 40px -8px rgb(4 30 50 / .45), 0 2px 6px rgb(4 30 50 / .2);
+}
+/* The hero is never taller than the screen: the map frame keeps its aspect ratio, sits on the hero bottom,
+   and loses a strip at the top on a short screen. The card floats on the south land, 30 map units above the frame bottom
+   (map units: x 460 to 1100, top at y 780 or lower, below the channel). 100cqw / 1440 is one map unit. */
+@media (min-width: 1400px) {
+  .hero { container-type: inline-size; aspect-ratio: auto; height: min(calc(100vw * 860 / 1440), max(680px, calc(100svh - var(--bar)))); }
+  /* min-height covers the few pixels by which 100vw (scrollbar included) can exceed the hero width */
+  .map img, .sea, .labels { inset: auto 0 0; height: auto; min-height: 100%; aspect-ratio: 1440 / 860; }
+  .card {
+    position: absolute; left: 20.833%; bottom: calc(100cqw * 30 / 1440); width: 44.444%; padding: 20px 26px 16px;
+    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 26px;
+  }
+  /* the title, the key numbers and the actions span both columns, so the card fits the land height down to 1400px */
+  .card h1, .card .facts, .card .actions { grid-column: 1 / -1; }
+  .card h1 { font-size: 24px; margin-bottom: 8px; }
+  .card .aff, .card .meta, .card .facts { font-size: 14px; }
+  .card .logos .labust { height: 26px; }
+  .card .logos .fer { height: 44px; margin: -9px 0; }
+  .card .logos .irb { height: 26px; }
+  .card .logos .hrzz { height: 30px; }
+}
+h1 { font: 700 32px/1.15 var(--sans); letter-spacing: -.01em; margin: 0 0 10px; text-wrap: balance; }
+.author { margin: 0; font-size: 17px; }
+.aff, .meta { margin: 2px 0 0; font-size: 15px; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; }
+.btn {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
+  border: 1.5px solid var(--ink); border-radius: 999px; background: var(--paper);
+  font: 600 15px var(--sans); color: var(--ink); text-decoration: none; cursor: pointer;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.btn:hover { background: var(--tint); color: var(--ink); }
+.btn.primary { background: var(--sea); border-color: var(--sea); color: #fff; }
+.btn.primary:hover { background: var(--sea-deep); color: #fff; }
+.facts { margin: 10px 0 0; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.facts b { color: var(--ink); }
+.credit { position: absolute; right: 12px; bottom: 10px; margin: 0; font-size: 12px; background: rgb(255 255 255 / .85); padding: 2px 8px; border-radius: 3px; }
+.credit a { color: var(--ink); }
+
+/* reading sections */
+.sec { max-width: 760px; margin: 0 auto; padding: 72px 28px 8px; }
+.sec.wide { max-width: 1180px; }
+.sec > p, .sec > ul, .sec > ol { max-width: 68ch; }
+/* the wide gallery keeps its heading on the reading column edge */
+.sec.wide > h2, .sec.wide > .lede { margin-left: max(0px, calc((100% - 704px) / 2)); }
+h2 { font: 700 30px/1.2 var(--sans); color: var(--sea); margin: 0 0 18px; letter-spacing: -.01em; }
+h3 { font: 700 20px/1.3 var(--sans); margin: 40px 0 10px; }
+.sec li { margin: 6px 0; }
+.sec li::marker { color: var(--sea); font-weight: 700; }
+.todo { background: #fff1d6; color: #7a3a10; padding: 0 .3em; border-radius: 3px; font-family: var(--mono); font-size: .88em; }
+.todo:hover { color: #5c2a08; }
+
+/* statistics */
+.tables { display: grid; gap: 32px; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+caption { text-align: left; font-weight: 700; margin-bottom: 8px; }
+th, td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+thead th { font-size: 14px; color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--ink); }
+tfoot th, tfoot td { font-weight: 700; border-bottom: 0; }
+.num { text-align: right; padding-right: 0; white-space: nowrap; }
+.rec { margin: 0; display: grid; grid-template-columns: max-content 1fr; }
+.rec div { display: contents; }
+.rec dt, .rec dd { padding: 9px 0; border-bottom: 1px solid var(--rule); }
+.rec dt { font-weight: 600; padding-right: 24px; }
+.rec dd { margin: 0; }
+
+/* gallery */
+.lede { color: var(--muted); }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0; }
+.filters button { min-height: 40px; padding: 0 16px; font-size: 15px; border-width: 1px; border-color: var(--rule); }
+.filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.filters button span { margin-left: 6px; opacity: .7; font-variant-numeric: tabular-nums; }
+.gallery { display: grid; grid-template-columns: 1fr 400px; gap: 28px; align-items: start; }
+.tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.tile { all: unset; box-sizing: border-box; display: block; width: 100%; cursor: pointer; border-radius: 4px; }
+.tile .frame { position: relative; display: block; aspect-ratio: 4 / 3; background: #e3eaee; border-radius: 4px; overflow: hidden; outline: 3px solid transparent; outline-offset: -3px; transition: outline-color .15s; }
+.tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.tile:hover .frame { outline-color: var(--shallow); }
+.tile[aria-pressed="true"] .frame { outline-color: var(--roof); }
+.tile .cap { display: flex; flex-direction: column; margin-top: 5px; line-height: 1.35; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tile .cap b { color: var(--ink); font-weight: 600; }
+.views { position: sticky; top: calc(var(--bar) + 16px); background: var(--tint); border-radius: 6px; padding: 20px; min-height: 260px; }
+.views h3 { margin: 0 0 2px; font-size: 18px; }
+.views .sub { margin: 0 0 14px; font-size: 14px; color: var(--muted); }
+.views .main { position: relative; aspect-ratio: 4 / 3; background: #e3eaee; border-radius: 4px; overflow: hidden; }
+.views .main img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+/* slideshow controls: quiet until hovered, so the crop stays the focus */
+.views .progress { height: 2px; margin-top: 8px; background: var(--rule); border-radius: 999px; overflow: hidden; }
+.views .progress span { display: block; height: 100%; background: var(--sea); transform: scaleX(0); transform-origin: left; }
+.views .progress span.run { animation: fill 2.5s linear forwards; }
+@keyframes fill { to { transform: scaleX(1); } }
+.views .ctrl { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.views .count { margin: 0; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.views .btns { display: flex; gap: 2px; }
+.views .btns button { all: unset; box-sizing: border-box; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; color: var(--muted); cursor: pointer; transition: background-color .15s, color .15s; }
+.views .btns button:hover { background: var(--paper); color: var(--ink); }
+.views .btns button:focus-visible, .tile:focus-visible { outline: 2px solid var(--roof); outline-offset: 2px; }
+.views .file { margin: 10px 0 0; font: 13px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.hint, .error { margin: 0; color: var(--muted); }
+.error { color: #8a2a12; }
+
+/* citation */
+.bib { position: relative; }
+.bib pre { margin: 0; padding: 56px 22px 20px; white-space: pre; background: var(--ink); color: var(--foam); border-radius: 6px; overflow-x: auto; font: 14px/1.6 var(--mono); }
+.bib pre code { background: none; padding: 0; font: inherit; }
+.bib pre ::selection { background: var(--shallow); color: var(--ink); }
+.copy { position: absolute; top: 10px; right: 10px; min-height: 36px; font-size: 14px; border-color: var(--paper); }
+
+.also { padding-top: 48px; }
+.also p { margin: 0; color: var(--muted); }
+.also b { color: var(--ink); }
+.logos, .affil { display: flex; flex-wrap: wrap; align-items: center; }
+.logos img, .affil img { display: block; width: auto; }
+/* heights balance the logos: the FER file has wide margins, the HRZZ file is cropped tight */
+.logos { grid-column: 1 / -1; gap: 12px 28px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); }
+.logos .labust { height: 30px; }
+.logos .fer { height: 50px; margin: -10px 0; }
+.logos .irb { height: 30px; }
+.logos .hrzz { height: 34px; }
+.affil { justify-content: center; gap: 28px 56px; margin-top: 88px; padding: 32px 28px; border-top: 1px solid var(--rule); }
+.affil .labust { height: 56px; }
+.affil .fer { height: 84px; }
+.affil .irb { height: 52px; }
+.affil .hrzz { height: 60px; }
+
+.foot { padding: 28px; background: var(--sea-deep); color: var(--foam); font-size: 14px; text-align: center; }
+.foot p { margin: 0; }
+.foot a { color: var(--foam); }
+
+@media (max-width: 960px) {
+  .gallery { grid-template-columns: 1fr; }
+  .views { position: static; }
+  .topbar { position: static; height: auto; flex-wrap: wrap; gap: 4px 16px; padding: 10px 16px; }
+  .topbar nav { margin-left: 0; flex-wrap: wrap; gap: 2px 16px; }
+  html { scroll-padding-top: 16px; }
+}
+/* below 1400px the south land is too small for the card: put the card below the map */
+@media (max-width: 1399px) {
+  .hero { aspect-ratio: auto; overflow: visible; background: none; }
+  .map { position: relative; height: auto; aspect-ratio: 1440 / 860; overflow: hidden; }
+  .card { max-width: 760px; margin: -40px max(12px, calc(50% - 380px)) 0; }
+  .credit { position: static; text-align: right; background: none; padding: 6px 12px 0; }
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .map { height: 56svh; aspect-ratio: auto; }
+  .card { padding: 24px 22px; }
+  h1 { font-size: 26px; }
+  .sec { padding-top: 56px; }
+  h2 { font-size: 26px; }
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .affil { gap: 24px 36px; margin-top: 64px; }
+  .logos { gap: 12px 10px; justify-content: space-between; }
+  .logos .labust { height: 24px; }
+  .logos .fer { height: 38px; margin: -7px 0; }
+  .logos .irb { height: 24px; }
+  .logos .hrzz { height: 28px; }
+  .affil .labust { height: 44px; }
+  .affil .fer { height: 64px; }
+  .affil .irb { height: 40px; }
+  .affil .hrzz { height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .map { animation: none; }
+}
+@media (max-width: 640px) {
+  /* portrait framing on the eastern channel (viewBox 505 0 1095 1328): Šibenik at the top, the marina below */
+  .labels .fort { display: none; }
+  .labels .marina { text-anchor: end; }
+  .labels .town { transform: translate(-195px, -250px); } /* to (1190, 300): the label at (1385, 550) runs past the narrow frame */
+}
