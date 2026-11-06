@@ -127,18 +127,36 @@ async function initGallery() {
 }
 
 function initCopy() {
-  for (const btn of document.querySelectorAll('[data-copy]')) {
-    btn.addEventListener('click', async () => {
-      const text = document.getElementById(btn.dataset.copy).textContent;
-      try {
-        await navigator.clipboard.writeText(text);
-        btn.textContent = 'Copied';
-      } catch {
-        btn.textContent = 'Select the text to copy';
-      }
-      setTimeout(() => { btn.textContent = 'Copy BibTeX'; }, 2000);
-    });
-  }
+  const btn = document.querySelector('[data-copy]');
+  const box = (id) => { const el = document.getElementById(id); return el.closest('pre') || el; };
+  const label = () => `Copy ${box(btn.dataset.copy).dataset.name}`;
+  const styles = document.querySelector('.styles');
+  styles.hidden = false; // without JS only the BibTeX block shows
+  styles.addEventListener('click', (e) => {
+    const pick = e.target.closest('[data-style]');
+    if (!pick) return;
+    for (const b of styles.children) {
+      b.ariaPressed = String(b === pick);
+      box(b.dataset.style).hidden = b !== pick;
+    }
+    btn.dataset.copy = pick.dataset.style;
+    btn.textContent = label();
+  });
+  btn.addEventListener('click', async () => {
+    const el = document.getElementById(btn.dataset.copy);
+    try {
+      // HTML keeps the italic title when the reference goes into a word processor
+      await (window.ClipboardItem
+        ? navigator.clipboard.write([new ClipboardItem({
+          'text/plain': new Blob([el.textContent], { type: 'text/plain' }),
+          'text/html': new Blob([el.innerHTML], { type: 'text/html' }) })])
+        : navigator.clipboard.writeText(el.textContent));
+      btn.textContent = 'Copied';
+    } catch {
+      btn.textContent = 'Select the text to copy';
+    }
+    setTimeout(() => { btn.textContent = label(); }, 2000);
+  });
 }
 
 // On phones the map shows the eastern channel (the <picture> source): give the labels the same viewBox.

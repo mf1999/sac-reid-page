@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this dataset, please cite it as below."
+type: dataset
+title: "Saint Anthony's Channel ReID: Vessel Re-Identification From a Fixed Camera"
+version: "1.0"
+date-released: "2026-11-06"
+doi: "10.5281/zenodo.24015510"
+url: "https://mf1999.github.io/sac-reid-page/"
+license: "CC-BY-NC-4.0"
+authors:
+  - family-names: "Fabijanić"
+    given-names: "Matej"
+    affiliation: "University of Zagreb, Faculty of Electrical Engineering and Computing"
+    email: "matej.fabijanic@fer.hr"
+abstract: >-
+  Image crops of vessels in the Saint Anthony's Channel near Šibenik, Croatia,
+  from one fixed camera. 712 identities and 56,615 crops in the Market-1501 layout,
+  with train, val and test splits. The test split comes from the hand-annotated
+  ground truth of 59 multi-object tracking sequences.
+keywords:
+  - re-identification
+  - vessel re-identification
+  - ship re-identification
+  - maritime computer vision
+  - maritime surveillance
+  - object re-identification
+  - Market-1501
+  - metric learning
+  - image retrieval
+  - fixed camera
+  - multi-object tracking
